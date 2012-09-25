@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="51dp"
+        android:freezesText="false"
+        android:padding="@dimen/padding_medium"
+        android:shadowDy="1"
+        android:textSize="@dimen/padding_large"
+        tools:context=".MainActivity" />
+
+    <Button
+        android:id="@+id/increment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="86dp"
+        android:clickable="true"
+        android:minHeight="@dimen/button_large_height"
+        android:minWidth="@dimen/button_large_width"
+        android:text="@string/increment" 
+        android:onClick="increment"/>
+
+    <Button
+        android:id="@+id/decrement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/increment"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="23dp"
+        android:minHeight="@dimen/button_small_height"
+        android:minWidth="@dimen/button_small_width"
+        android:text="@string/decrement" 
+        android:onClick="decrement" />
+
+</RelativeLayout>
