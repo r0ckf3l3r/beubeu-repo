@@ -1,6 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_clear"
+          android:title="@string/menu_clear"
+          android:showAsAction="withText" 
+          android:onClick="clearCounter" />
+    <item android:id="@+id/menu_save"
+          android:title="@string/menu_save"
+          android:showAsAction="withText" 
+          android:onClick="save"/>
+    
+</menu>
+<!--  <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
 </menu>
+-->

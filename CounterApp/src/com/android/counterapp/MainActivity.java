@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,7 +28,13 @@ public class MainActivity extends Activity {
 
 	private LinkedList<Click> clicks;
 
-	private LinkedList<Location> locations;
+	// private LinkedList<Location> locations;
+
+	Location lastLocation;
+
+	LocationManager locationManager;
+
+	LocationListener locationListener;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		clicks = new LinkedList<Click>();
+		// locations = new LinkedList<Location>();
 
 		initCounter();
 		initLocationManager();
@@ -49,6 +57,21 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_clear:
+			clearCounter();
+			return true;
+		case R.id.menu_save:
+			save();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	public String getDial() {
@@ -77,12 +100,17 @@ public class MainActivity extends Activity {
 		tv.setText(getDial());
 	}
 
-	public void clearCounter(View view) {
-		initCounter();
+	public void clearCounter() {
 		System.out.println("reseting counter: " + getDial());
+
+		initCounter();
 
 		TextView tv = (TextView) findViewById(R.id.textView1);
 		tv.setText(getDial());
+	}
+
+	public void save() {
+		System.out.println("saving. ");
 	}
 
 	private void initCounter() {
@@ -163,7 +191,6 @@ public class MainActivity extends Activity {
 	}
 
 	private void addClick() {
-		Location location;
 
 		String clickName = this.clicks.size() + 1 + "";
 		Date date = new Date();
@@ -175,15 +202,13 @@ public class MainActivity extends Activity {
 		click.setName(clickName);
 		click.setUserId(1);
 
-		try {
-			location = this.locations.getLast();
-
-			System.out.println("adding new location: " + location.getLatitude()
-					+ ", " + location.getLongitude());
-			click.setLatitude(location.getLatitude());
-			click.setLongitude(location.getLongitude());
-
-		} catch (Exception e) {
+		if (this.lastLocation != null) {
+			System.out.println("adding new location: "
+					+ this.lastLocation.getLatitude() + ", "
+					+ this.lastLocation.getLongitude());
+			click.setLatitude(this.lastLocation.getLatitude());
+			click.setLongitude(this.lastLocation.getLongitude());
+		} else {
 			System.out.println("there are no locations");
 		}
 
@@ -196,29 +221,26 @@ public class MainActivity extends Activity {
 	}
 
 	private void addLocation(Location location) {
-		this.locations.add(location);
+		this.lastLocation = location;
 	}
-
-	// private void removeLocation() {
-	// if (!this.locations.isEmpty())
-	// this.locations.removeLast();
-	// }
 
 	private void initLocationManager() {
 		// Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager) this
+		this.locationManager = (LocationManager) this
 				.getSystemService(Context.LOCATION_SERVICE);
 
 		// Define a listener that responds to location updates
-		LocationListener locationListener = new LocationListener() {
+		this.locationListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
-				// Called when a new location is found by the network location
-				// provider.
+				if (location == null)
+					return;
+
 				addLocation(location);
 			}
 
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
+				System.out.println("status changed" + provider);
 			}
 
 			public void onProviderEnabled(String provider) {
@@ -232,10 +254,24 @@ public class MainActivity extends Activity {
 
 		// Register the listener with the Location Manager to receive location
 		// updates
-		locationManager.requestLocationUpdates(
-				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
-				0, locationListener);
+		try {
+			this.locationManager.requestLocationUpdates(
+					LocationManager.NETWORK_PROVIDER, 0, 0,
+					this.locationListener);
+		} catch (Exception e) {
+			System.out.println("unable to register location listener: "
+					+ e.getMessage());
+		}
+
+		try {
+
+			this.locationManager.requestLocationUpdates(
+					LocationManager.GPS_PROVIDER, 0, 0, this.locationListener);
+		} catch (Exception e) {
+			System.out.println("unable to register location listener: "
+					+ e.getMessage());
+		}
 
 	}
+
 }

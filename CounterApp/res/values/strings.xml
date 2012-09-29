@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">CounterApp</string>
     <string name="hello_world">hello world</string>
     <string name="menu_settings">Settings</string>
@@ -7,5 +6,7 @@
     <string name="dial">0001</string>
     <string name="increment">+</string>
     <string name="decrement">-</string>
-
+    <string name="menu_clear">Clear</string>
+    <string name="menu_save">Save</string>
+    <string name="setLabel">Add Label</string>
 </resources>
