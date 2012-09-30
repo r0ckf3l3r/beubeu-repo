@@ -4,14 +4,19 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.counterapp.model.Click;
@@ -35,6 +40,9 @@ public class MainActivity extends Activity {
 	LocationManager locationManager;
 
 	LocationListener locationListener;
+
+	static final int DIALOG_CLEAR_COUNTER = 0;
+	static final int DIALOG_SAVE_COUNT = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +82,76 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = null;
+		AlertDialog.Builder builder;
+
+		switch (id) {
+		case DIALOG_CLEAR_COUNTER:
+
+			builder = new AlertDialog.Builder(this);
+			builder.setMessage("Clear counter?")
+					.setCancelable(false)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									initCounter();
+									TextView tv = (TextView) findViewById(R.id.textView1);
+									tv.setText(getDial());
+								}
+							})
+					.setNegativeButton("No",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+
+			dialog = builder.create();
+
+			break;
+
+		case DIALOG_SAVE_COUNT:
+
+//			Context mContext = getApplicationContext();
+			LayoutInflater inflater = (LayoutInflater) this
+					.getSystemService(LAYOUT_INFLATER_SERVICE);
+			View layout = inflater.inflate(R.layout.save_dialog,
+					(ViewGroup) findViewById(R.id.layout_root));
+
+			TextView text = (TextView) layout.findViewById(R.id.text);
+			text.setText("Save count");
+
+			builder = new AlertDialog.Builder(this);
+			builder.setView(layout)
+			.setCancelable(false)
+			.setPositiveButton("Save",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int id) {
+							//TODO: save
+						}
+					})
+			.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int id) {
+							dialog.cancel();
+						}
+					});;
+			dialog = builder.create();
+
+			break;
+
+		default:
+			dialog = null;
+		}
+
+		return dialog;
+	}
+
 	public String getDial() {
 		return numFour + "" + numThree + "" + numTwo + "" + numOne + "";
 	}
@@ -100,17 +178,19 @@ public class MainActivity extends Activity {
 		tv.setText(getDial());
 	}
 
+	@SuppressWarnings("deprecation")
 	public void clearCounter() {
 		System.out.println("reseting counter: " + getDial());
 
-		initCounter();
+		showDialog(DIALOG_CLEAR_COUNTER);
 
-		TextView tv = (TextView) findViewById(R.id.textView1);
-		tv.setText(getDial());
+		System.out.println("counter: " + getDial());
 	}
 
+	@SuppressWarnings("deprecation")
 	public void save() {
 		System.out.println("saving. ");
+		showDialog(DIALOG_SAVE_COUNT);
 	}
 
 	private void initCounter() {
