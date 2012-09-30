@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.android.counterapp.model.Click;
@@ -48,9 +49,6 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		clicks = new LinkedList<Click>();
-		// locations = new LinkedList<Location>();
 
 		initCounter();
 		initLocationManager();
@@ -115,7 +113,7 @@ public class MainActivity extends Activity {
 
 		case DIALOG_SAVE_COUNT:
 
-//			Context mContext = getApplicationContext();
+			// Context mContext = getApplicationContext();
 			LayoutInflater inflater = (LayoutInflater) this
 					.getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.save_dialog,
@@ -124,23 +122,30 @@ public class MainActivity extends Activity {
 			TextView text = (TextView) layout.findViewById(R.id.text);
 			text.setText("Save count");
 
+//			CheckBox chkBox = (CheckBox) dialog
+//					.findViewById(R.id.upload_checkbox);
+			
 			builder = new AlertDialog.Builder(this);
 			builder.setView(layout)
-			.setCancelable(false)
-			.setPositiveButton("Save",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int id) {
-							//TODO: save
-						}
-					})
-			.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int id) {
-							dialog.cancel();
-						}
-					});;
+					.setCancelable(false)
+					.setPositiveButton("Save",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									// TODO: save
+								}
+							})
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			;
+
+			// This line will go in your OnClickListener.
+//			chkBox.setEnabled(false);
 			dialog = builder.create();
 
 			break;
@@ -194,6 +199,14 @@ public class MainActivity extends Activity {
 	}
 
 	private void initCounter() {
+
+		if (clicks == null) {
+			clicks = new LinkedList<Click>();
+		} else {
+			clicks.clear();
+		}
+		// locations = new LinkedList<Location>();
+
 		numOne = 0;
 		numTwo = 0;
 		numThree = 0;

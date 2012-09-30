@@ -11,7 +11,7 @@
         android:textColor="#FFF" />
 
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/upload_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
