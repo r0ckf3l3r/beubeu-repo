@@ -2,50 +2,20 @@
     android:id="@+id/layout_root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:textColor="#FFF" />
-
-    <CheckBox
-        android:id="@+id/upload_checkbox"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/padding_large" >
+
+    <EditText
+        android:id="@+id/save_dialog_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="197dp"
-        android:text="@string/menu_save_check_box" />
-
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="58dp"
-        android:layout_marginTop="94dp"
-        android:layout_toRightOf="@+id/text" />
+        android:ems="10" 
+        android:inputType="text"
+        android:hint="@string/menu_save_label">
 
+        <requestFocus />
+    </EditText>
+    
 </RelativeLayout>
-<!-- 
-
- <Button
-        android:id="@+id/button_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/checkBox1"
-        android:layout_marginTop="38dp"
-        android:layout_toRightOf="@+id/text"
-        android:text="@string/menu_save_save_button" />
-
-    <Button
-        android:id="@+id/button_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/button_save"
-        android:layout_centerHorizontal="true"
-        android:text="@string/menu_save_cancel_button" />
-
- -->

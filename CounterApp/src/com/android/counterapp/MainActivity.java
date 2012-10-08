@@ -1,8 +1,18 @@
 package com.android.counterapp;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.LinkedList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,18 +21,35 @@ import android.content.DialogInterface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.counterapp.model.Click;
 
+@SuppressLint("WorldWriteableFiles")
 public class MainActivity extends Activity {
+
+	private static final int DIALOG_CLEAR_COUNTER = 0;
+
+	private static final int DIALOG_SAVE_COUNT = 1;
+
+	private static final String TEXTVIEWNOGPS = "NO GPS";
+
+	private static final String TEXTVIEWGPSOK = "GPS OK";
+
+	private static final String TEXTVIEWNOWIRELESS = "No Wireless";
+
+	private static final String TEXTVIEWWIRELESSOK = "Wireless OK";
+
+	private static final String INTERNAL_STORAGE_FILENAME = "counts.json";
 
 	private int numOne;
 
@@ -36,14 +63,23 @@ public class MainActivity extends Activity {
 
 	// private LinkedList<Location> locations;
 
-	Location lastLocation;
+	private Location lastLocation;
 
-	LocationManager locationManager;
+	private LocationManager locationManager;
 
-	LocationListener locationListener;
+	private LocationListener locationListener;
 
-	static final int DIALOG_CLEAR_COUNTER = 0;
-	static final int DIALOG_SAVE_COUNT = 1;
+	private ConnectivityManager connectivityManager;
+
+	private TextView tv;
+
+	private TextView tvWireless;
+
+	private TextView tvGPS;
+
+	protected boolean wirelessOK = false;
+
+	private boolean gpsOk = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,9 +88,18 @@ public class MainActivity extends Activity {
 
 		initCounter();
 		initLocationManager();
+		initConnectivityManager();
 
-		TextView tv = (TextView) findViewById(R.id.textView1);
+		checkNetworkConnection();
+
+		tv = (TextView) findViewById(R.id.textView1);
+		tvWireless = (TextView) findViewById(R.id.TextViewWireless);
+		tvGPS = (TextView) findViewById(R.id.TextViewGPS);
+
 		tv.setText(getDial());
+
+		updateGPSStatus();
+		updateNetworkStatus();
 
 	}
 
@@ -113,18 +158,17 @@ public class MainActivity extends Activity {
 
 		case DIALOG_SAVE_COUNT:
 
-			// Context mContext = getApplicationContext();
 			LayoutInflater inflater = (LayoutInflater) this
 					.getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.save_dialog,
 					(ViewGroup) findViewById(R.id.layout_root));
 
-			TextView text = (TextView) layout.findViewById(R.id.text);
-			text.setText("Save count");
+			final EditText label = (EditText) layout
+					.findViewById(R.id.save_dialog_text);
 
-//			CheckBox chkBox = (CheckBox) dialog
-//					.findViewById(R.id.upload_checkbox);
-			
+			Date date = new Date();
+			label.setHint(date.toString());
+
 			builder = new AlertDialog.Builder(this);
 			builder.setView(layout)
 					.setCancelable(false)
@@ -132,7 +176,14 @@ public class MainActivity extends Activity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									// TODO: save
+									try {
+										saveClicksToFile(label.getText()
+												.toString());
+									} catch (IOException e) {
+										System.out
+												.println("Error saving clicks: "
+														+ e.getMessage());
+									}
 								}
 							})
 					.setNegativeButton("Cancel",
@@ -145,9 +196,15 @@ public class MainActivity extends Activity {
 			;
 
 			// This line will go in your OnClickListener.
-//			chkBox.setEnabled(false);
-			dialog = builder.create();
+			// chkBox.setEnabled(false);
 
+			// dialog = builder.create();
+			// CheckBox chkBox = (CheckBox) dialog
+			// .findViewById(R.id.upload_checkbox);
+
+			// chkBox.setEnabled(gpsOk);
+
+			dialog = builder.create();
 			break;
 
 		default:
@@ -155,6 +212,10 @@ public class MainActivity extends Activity {
 		}
 
 		return dialog;
+	}
+
+	protected void onDestroy() {
+		locationManager.removeUpdates(locationListener);
 	}
 
 	public String getDial() {
@@ -317,6 +378,37 @@ public class MainActivity extends Activity {
 		this.lastLocation = location;
 	}
 
+	private void initConnectivityManager() {
+		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	}
+
+	private void checkNetworkConnection() {
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+		if (networkInfo != null && networkInfo.isConnected()) {
+			wirelessOK = true;
+		} else {
+			wirelessOK = false;
+		}
+	}
+
+	private void updateGPSStatus() {
+		if (gpsOk) {
+			tvGPS.setText(TEXTVIEWGPSOK);
+		} else {
+			tvGPS.setText(TEXTVIEWNOGPS);
+
+		}
+	}
+
+	private void updateNetworkStatus() {
+		if (wirelessOK) {
+			tvWireless.setText(TEXTVIEWWIRELESSOK);
+		} else {
+			tvWireless.setText(TEXTVIEWNOWIRELESS);
+
+		}
+	}
+
 	private void initLocationManager() {
 		// Acquire a reference to the system Location Manager
 		this.locationManager = (LocationManager) this
@@ -367,4 +459,109 @@ public class MainActivity extends Activity {
 
 	}
 
+	private void saveClicksToFile(String label) throws IOException {
+
+		JSONObject jclick;
+		JSONArray jclicks = new JSONArray();
+		JSONArray jcounts = new JSONArray();
+
+		JSONObject jcount = new JSONObject();
+
+		try {
+
+			for (Click click : clicks) {
+				jclick = new JSONObject();
+
+				jclick.put("date", click.getDate());
+				jclick.put("userId", click.getUserId());
+				jclick.put("name", click.getName());
+				jclick.put("latitude", click.getLatitude());
+				jclick.put("longitude", click.getLongitude());
+				jclick.put("count", click.getCount());
+
+				jclicks.put(jclick);
+			}
+
+			jcount.put("name", label);
+			jcount.put("date", new Date());
+			jcount.put("clicks", jclicks);
+
+			jcounts.put(jcount);
+
+			writeFileToInternalStorage(jcounts.toString());
+
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+
+		readClicks();
+	}
+
+	public void readClicks() {
+		readFileFromInternalStorage();
+	}
+
+	private void writeFileToInternalStorage(String string) {
+		String eol = System.getProperty("line.separator");
+
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new OutputStreamWriter(openFileOutput(
+					INTERNAL_STORAGE_FILENAME, MODE_APPEND)));
+			writer.write(string + eol);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+	}
+
+	private void readFileFromInternalStorage() {
+		String eol = System.getProperty("line.separator");
+		String x = "";
+		
+		BufferedReader input = null;
+		try {
+			input = new BufferedReader(new InputStreamReader(
+					openFileInput(INTERNAL_STORAGE_FILENAME)));
+			String line;
+			StringBuffer buffer = new StringBuffer();
+
+			while ((line = input.readLine()) != null) {
+				buffer.append(line + eol);
+				String jsontext = new String(line);
+				JSONArray entries = new JSONArray(jsontext);
+				// JSONObject entries = new JSONObject(jsontext);
+
+				x = "JSON parsed.\nThere are [" + entries.length() + "]\n\n";
+
+				int i;
+				for (i = 0; i < entries.length(); i++) {
+
+					JSONObject post = entries.getJSONObject(i);
+					x += "------------\n";
+					x += "name:" + post.getString("name") + "\n";
+					x += "name:" + post.getString("date") + "\n\n";
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			System.out.println("saved: " + x);
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }

@@ -26,28 +26,45 @@
         android:clickable="true"
         android:minHeight="@dimen/button_large_height"
         android:minWidth="@dimen/button_large_width"
-        android:text="@string/increment" 
-        android:onClick="increment"/>
+        android:onClick="increment"
+        android:text="@string/increment" />
 
     <Button
         android:id="@+id/decrement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/increment"
         android:layout_below="@+id/increment"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="23dp"
+        android:layout_marginTop="26dp"
         android:minHeight="@dimen/button_small_height"
         android:minWidth="@dimen/button_small_width"
-        android:text="@string/decrement" 
-        android:onClick="decrement" />
+        android:onClick="decrement"
+        android:text="@string/decrement" />
 
-    <Spinner
-        android:id="@+id/spinner1"
+    <TextView
+        android:id="@+id/TextViewGPS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/increment"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/increment"
-        />
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@+id/textView1"
+        android:freezesText="false"
+        android:padding="@dimen/padding_medium"
+        android:shadowDy="1"
+        android:textSize="@dimen/padding_large"
+        tools:context=".MainActivity" />
+
+    <TextView
+        android:id="@+id/TextViewWireless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="32dp"
+        android:layout_toLeftOf="@+id/textView1"
+        android:freezesText="false"
+        android:padding="@dimen/padding_medium"
+        android:shadowDy="1"
+        android:textSize="@dimen/padding_large"
+        tools:context=".MainActivity" />
 
 </RelativeLayout>

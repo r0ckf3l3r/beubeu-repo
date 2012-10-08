@@ -11,4 +11,5 @@
     <string name="setLabel">Add Label</string>
     <string name="menu_save_spinner_option">Choose label</string>
     <string name="menu_save_check_box">Upload data?</string>
+    <string name="menu_save_label">label</string>
 </resources>
