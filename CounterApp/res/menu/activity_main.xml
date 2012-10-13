@@ -7,6 +7,10 @@
           android:title="@string/menu_save"
           android:showAsAction="withText|always" 
           android:onClick="save"/>
+    <item android:id="@+id/menu_list_count"
+          android:title="@string/menu_list_count"
+          android:showAsAction="withText|always" 
+          android:onClick="listCount"/>
     
 </menu>
 <!--  <menu xmlns:android="http://schemas.android.com/apk/res/android">

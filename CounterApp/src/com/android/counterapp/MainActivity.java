@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -33,6 +34,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.counterapp.model.Click;
+import com.android.counterapp.ListCountActivity;;
 
 @SuppressLint("WorldWriteableFiles")
 public class MainActivity extends Activity {
@@ -119,6 +121,9 @@ public class MainActivity extends Activity {
 			return true;
 		case R.id.menu_save:
 			save();
+			return true;
+		case R.id.menu_list_count:
+			listCount();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -257,6 +262,13 @@ public class MainActivity extends Activity {
 	public void save() {
 		System.out.println("saving. ");
 		showDialog(DIALOG_SAVE_COUNT);
+	}
+
+	public void listCount() {
+		System.out.println("listing counts");
+		Intent intent = new Intent(this, ListCountActivity.class);
+		startActivity(intent);
+
 	}
 
 	private void initCounter() {
@@ -526,7 +538,7 @@ public class MainActivity extends Activity {
 	private void readFileFromInternalStorage() {
 		String eol = System.getProperty("line.separator");
 		String x = "";
-		
+
 		BufferedReader input = null;
 		try {
 			input = new BufferedReader(new InputStreamReader(

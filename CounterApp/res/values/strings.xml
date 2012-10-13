@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">CounterApp</string>
     <string name="hello_world">hello world</string>
     <string name="menu_settings">Settings</string>
@@ -8,8 +9,13 @@
     <string name="decrement">-</string>
     <string name="menu_clear">Clear</string>
     <string name="menu_save">Save</string>
+    <string name="menu_list_count">Show Counts</string>
     <string name="setLabel">Add Label</string>
     <string name="menu_save_spinner_option">Choose label</string>
     <string name="menu_save_check_box">Upload data?</string>
     <string name="menu_save_label">label</string>
+    <string name="title_activity_list_count">ListCountActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="internal_storage_filename">counts.json</string>
+
 </resources>
