@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application>
+        <uses-library android:name="com.google.android.maps" />
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo" >
@@ -37,6 +38,16 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="android.app.ListActivity" />
+        </activity>
+        <activity
+            android:name=".CounterMapActivity"
+            android:label="@string/title_activity_map"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
